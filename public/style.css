@@ -551,4 +551,11 @@
         pre code{
             white-space:pre-wrap
         }
-    }
+}
+
+.error{    
+    color: rgb(206, 59, 59);
+    border-radius: 1px;
+    padding: 0.1rem;
+    font-size: 15px;
+}
