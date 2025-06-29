@@ -1,19 +1,9 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/style.css">
-</head>
+<%- include('includes/head') %>
 <body>
-    <header>
-        <h2><a href="/">Our wonderful App</a></h2>
-        <nav>
-            <a href="/login">Log In</a>
-        </nav>
-    </header>
+   <%- include('includes/header') %>
 
     <main>
         <form action="/register" method="POST">
@@ -35,8 +25,6 @@
         </fieldset>
         </form>
     </main>
-    <footer>
-        <small>&copy our wonderful app</small>
-    </footer>
+    <%- include('includes/footer') %>
 </body>
 </html>

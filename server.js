@@ -40,12 +40,20 @@ app.use(function (req, res, next) {
     next()
 })
 
-app.get("/homepage", (req, res) => {
+app.get("/", (req, res) => {
+    if (req.user) {
+        return res.render("dashboard")
+    }
     res.render("homepage")
 })
 
 app.get("/login", (req, res) => {
     res.render("login")
+})
+
+app.get("/logout", (req, res) => {
+    res.render("ourSimpleApp")
+    res.redirect("/")
 })
 
 app.post("/register", (req, res) => {    // Handle registration logic here
