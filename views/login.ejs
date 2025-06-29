@@ -6,9 +6,24 @@
     <%- include('includes/header') %>
 
     <main>
-        <h3>Hello this is from Login Page</h3>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi labore reiciendis impedit eum eos sit quod unde aperiam dolore minima, doloremque eligendi ratione culpa soluta hic explicabo nihil? Sequi, architecto!           
-        </p>
+        <form action="/login" method="POST">
+        
+        <fieldset>
+            <legend>Log In</legend>
+            <label for="username"><small>Username</small></label>
+            <input type="text" id="username" name="username" placeholder="Enter your username"  autocomplete="off">
+
+            <label for="password"><small>Password</small></label>
+            <input type="password" id="password" name="password" placeholder="Enter your password"  autocomplete="off">
+            <br>
+            <% errors.forEach(error => { %>
+            <div>
+                <p class="error"><%= error %></p>
+            </div>
+            <% }) %>
+            <button >Log In</button>
+        </fieldset>
+        </form>
     </main>
     <%- include('includes/footer') %>
 </body>

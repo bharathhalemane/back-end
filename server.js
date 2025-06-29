@@ -52,7 +52,44 @@ app.get("/login", (req, res) => {
 })
 
 app.get("/logout", (req, res) => {
-    res.render("ourSimpleApp")
+    res.clearCookie("ourSimpleApp")
+    res.redirect("/")
+})
+
+app.post("/login", (req, res) => {
+    const errors = []
+    if (typeof req.body.username !== "string") req.body.username = ""
+    if (typeof req.body.password !== "string") req.body.password = ""
+
+    if (req.body.username.trim() == "") errors=["Invalid username / password"]
+    if (req.body.password == "") errors=["Invalid username / password"]
+    
+    if (errors.length) {
+        return res.render("login",{errors})
+    }
+    const userInQuestionStatement = db.prepare("SELECT * FROM users WHERE username = ?")
+    const userInQuestion = userInQuestionStatement.get(req.body.username)
+    if (!userInQuestion) {
+        errors = ["Invalid username / password"]   
+        return res.render("login", {errors})
+    }
+    const matchOrNot = bcrypt.compareSync(req.body.password, userInQuestion.password)
+    if(!matchOrNot) {
+        errors.push("Invalid username / password")
+        return res.render("login", {errors})
+    }
+    //log the user in give by cookie
+    const ourTokenValue = jwt.sign(
+        { exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, skyColor: "blue", userInQuestion: userInQuestion.id, userInQuestion: userInQuestion.username },
+        process.env.JWTSECRET
+    )
+
+    res.cookie("ourSimpleApp", ourTokenValue, {
+        httpOnly: true,
+        secure: true, // Use secure cookies in production
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 60 * 24 // 1 day
+    })
     res.redirect("/")
 })
 
@@ -67,6 +104,16 @@ app.post("/register", (req, res) => {    // Handle registration logic here
     if (req.body.username && req.body.username.length < 3) errors.push("Username must be at least 3 characters long")
     if (req.body.username && req.body.username.length > 10) errors.push("Username must be less than 10 characters long")
     if (req.body.username && !req.body.username.match(/^[a-zA-Z0-9]+$/)) errors.push("Username can only contain letters and numbers")
+    
+    const usernameStatement = db.prepare("SELECT * FROM users WHERE username = ?")
+    const usernameCheck = usernameStatement.get("req.body.username")
+
+    if(usernameCheck) errors.push("that username already exists")
+
+    if (!req.body.password) errors.push("Password is required")
+    if (req.body.password && req.body.password.lenght < 12) errors.push("Password must be at least 12 characters long")
+    if (req.body.password && req.body.password.length > 70) errors.push("Password must be less than 70 characters long")
+
     
     if (errors.length) {
         return res.render("homepage",{errors})
@@ -95,7 +142,7 @@ app.post("/register", (req, res) => {    // Handle registration logic here
         maxAge: 1000 * 60 * 60 * 24
     })
     
-    res.send("Registration successful!")
+    res.redirect("/")
 })
 
 app.listen(3000)
