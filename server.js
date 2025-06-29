@@ -38,30 +38,17 @@ app.get("/login", (req, res) => {
 
 app.post("/register", (req, res) => {    // Handle registration logic here
     const errors = []
-    
-    
-    if(typeof req.body.username !== "string" || req.body.username.length < 3) {
-        errors.push("Username must be at least 3 characters long")
-    }
-    if (typeof req.body.password === "string") {
-        if (req.body.password.length < 5) {
-            errors.push("Password must be at least 5 characters long")
-        }
-        if (req.body.password.length > 20) {
-            errors.push("Password must be at most 20 characters long")
-        }
-    } 
+    if (typeof req.body.usernme !== "string") req.body.username = ""
+    if (typeof req.body.password !== "string") req.body.password = ""
 
-    if (!req.body.username) errors.push("Username cannot be empty")
-    if (!req.body.password) errors.push("Password cannot be empty")
-    if (req.body.username && !req.body.username.match(/^[a-zA-Z0-9]+$/)) errors.push("Username must contain only alphanumeric characters")
     req.body.username = req.body.username.trim()
-    if (errors.length) {        
-        return res.render("homepage",{errors})
-    }
-        
+
+    if (!req.body.username) errors.push("Username is required   ")
+    if (req.body.username && req.body.username.length < 3) errors.push("Username must be at least 3 characters long")
+    if (req.body.username && req.body.username.length > 10) errors.push("Username must be less than 10 characters long")
+    if(req.body.username && !req.body.username.match(/^[a-zA-Z0-9]+$/)) errors.push("Username can only contain letters and numbers")
     
-    errors.splice(0, errors.length) // Clear the errors array for the next request
+    // Clear the errors array for the next request
     //save the new user into a database 
     const salt = bcrypt.genSaltSync(10)
     req.body.password = bcrypt.hashSync(req.body.password, salt)
